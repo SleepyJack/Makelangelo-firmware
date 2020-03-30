@@ -26,6 +26,11 @@
 #define CLOCK_ADJUST(x) {  OCR1A = (x);  }  // microseconds
 #endif
 
+#ifdef LPC1796
+// Macro to place item in Flash memory not implemented for LPC1769
+#define F(x) x
+#endif
+
 //------------------------------------------------------------------------------
 // DEFINES
 //------------------------------------------------------------------------------
@@ -583,32 +588,31 @@ void describe_segments() {
   Serial.println("---------------------------------------------------------------------------------------------------------------------------");
 
   int s = current_segment;
-  char const tab = '\t';
   while (s != last_segment) {
     Segment *next = &line_segments[s];
     int coast = next->decel_after - next->accel_until;
     int decel = next->steps_total - next->decel_after;
     Serial.print(s);
-    Serial.print(tab);   Serial.print(next->distance);
-    Serial.print(tab);   Serial.print(next->acceleration);
+    Serial.print(F('\t'));   Serial.print(next->distance);
+    Serial.print(F('\t'));   Serial.print(next->acceleration);
 
-    Serial.print(tab);   Serial.print(next->entry_speed);
-    Serial.print(tab);   Serial.print(next->nominal_speed);
-    Serial.print(tab);   Serial.print(next->entry_speed_max);
+    Serial.print(F('\t'));   Serial.print(next->entry_speed);
+    Serial.print(F('\t'));   Serial.print(next->nominal_speed);
+    Serial.print(F('\t'));   Serial.print(next->entry_speed_max);
 
-    Serial.print(tab);   Serial.print(next->initial_rate);
-    Serial.print(tab);   Serial.print(next->nominal_rate);
-    Serial.print(tab);   Serial.print(next->final_rate);
+    Serial.print(F('\t'));   Serial.print(next->initial_rate);
+    Serial.print(F('\t'));   Serial.print(next->nominal_rate);
+    Serial.print(F('\t'));   Serial.print(next->final_rate);
 
-    Serial.print(tab);   Serial.print(next->accel_until);
-    Serial.print(tab);   Serial.print(coast);
-    Serial.print(tab);   Serial.print(decel);
-    //Serial.print(tab);   Serial.print(next->steps_total);
-    //Serial.print(tab);   Serial.print(next->steps_taken);
+    Serial.print(F('\t'));   Serial.print(next->accel_until);
+    Serial.print(F('\t'));   Serial.print(coast);
+    Serial.print(F('\t'));   Serial.print(decel);
+    //Serial.print(F('\t'));   Serial.print(next->steps_total);
+    //Serial.print(F('\t'));   Serial.print(next->steps_taken);
 
-    Serial.print(tab);   Serial.print(next->nominal_length_flag != 0 ? 'Y' : 'N');
-    Serial.print(tab);   Serial.print(next->recalculate_flag != 0 ? 'Y' : 'N');
-    Serial.print(tab);   Serial.print(next->busy != 0 ? 'Y' : 'N');
+    Serial.print(F('\t'));   Serial.print(next->nominal_length_flag != 0 ? 'Y' : 'N');
+    Serial.print(F('\t'));   Serial.print(next->recalculate_flag != 0 ? 'Y' : 'N');
+    Serial.print(F('\t'));   Serial.print(next->busy != 0 ? 'Y' : 'N');
     Serial.println();
     s = get_next_segment(s);
   }

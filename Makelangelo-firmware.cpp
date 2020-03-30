@@ -14,11 +14,17 @@
 #include "LCD.h"
 #include "ma_eeprom.h"
 
+#ifndef LPC1796 // The referenced SPI library is not available for LPC1769
 #include <SPI.h>  // pkm fix for Arduino 1.5
+#endif
 
 #include "Vector3.h"
 #include "sdcard.h"
 
+#ifdef LPC1796
+// Macro to place item in Flash memory not implemented for LPC1769
+#define F(x) x
+#endif
 
 //------------------------------------------------------------------------------
 // GLOBALS
@@ -67,7 +73,21 @@ unsigned int localPort = 9999;
 #endif  // HAS_WIFI
 
 
+//------------------------------------------------------------------------------
+// PROTOTYPES
+//------------------------------------------------------------------------------
 
+void setHome(float *pos);
+float parseNumber(char code, float val);
+boolean equalEpsilon(float a, float b);
+void printConfig();
+void sayModelAndUID();
+void sayFirmwareVersionNumber();
+void jogMotors();
+void parseSetHome();
+void setCalibration();
+void makelangelo5Setup();
+void makelangelo33Setup();
 
 //------------------------------------------------------------------------------
 // METHODS

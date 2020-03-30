@@ -9,6 +9,8 @@
   #error "Oops!  Make sure you have selected LPC1796 processor as target (board AX5-Mini)"
 #endif
 
+#warning Need proper definition of PI
+#define PI                        (3.14)
 
 #define CLOCK_FREQ                (120000000)  // 120MHz specified at https://www.panucatt.com/azteeg_X5_mini_reprap_3d_printer_controller_p/ax5mini.htm
 
