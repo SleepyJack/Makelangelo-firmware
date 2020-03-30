@@ -214,7 +214,11 @@
 #define CRITICAL_SECTION_END    interrupts();
 
 #elif defined LPC1796
-	#warning Need to configure timers for LPC1796
+	#warning Need to add correct specification of clock freq, timer max count and critical sections for LPC1796
+#define CLOCK_FREQ                (120000000)     // 120MHz specified at https://www.panucatt.com/azteeg_X5_mini_reprap_3d_printer_controller_p/ax5mini.htm
+#define MAX_COUNTER               (4294967295L)   // 32 bits specified AS PLACEHOLDER ONLY. Need to clarify this
+#define CRITICAL_SECTION_START    noInterrupts(); // There appears to be an LPC176x implementation of this in the Arduino framework
+#define CRITICAL_SECTION_END      interrupts();   // There appears to be an LPC176x implementation of this in the Arduino framework
 #else
 
 // for timer interrupt control

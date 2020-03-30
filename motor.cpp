@@ -129,11 +129,11 @@ uint8_t positionErrorFlags;
 // METHODS
 //------------------------------------------------------------------------------
 #if defined ESP8266
-// itr() not needed for ESP8266
+void itr(); // ISR callback function needed for ESP8266
 #elif defined LPC1796
-#warning Need to define itr() for LPC1796
+#warning Need to define ISR usage for LPC1796
 #else
-void itr();
+// ISR callback function not needed for ATMega
 #endif
 
 
@@ -331,7 +331,7 @@ void motor_setup() {
   timer0_attachInterrupt(itr);
   CLOCK_ADJUST(2000);
 #elif defined LPC1796
-  #warning Need to disable global interrupts for LPC1796
+  #warning Need to configure timer for LPC1796
 #else
   // set entire TCCR1A register to 0
   TCCR1A = 0;
@@ -583,31 +583,32 @@ void describe_segments() {
   Serial.println("---------------------------------------------------------------------------------------------------------------------------");
 
   int s = current_segment;
+  char const tab = '\t';
   while (s != last_segment) {
     Segment *next = &line_segments[s];
     int coast = next->decel_after - next->accel_until;
     int decel = next->steps_total - next->decel_after;
     Serial.print(s);
-    Serial.print(F("\t"));   Serial.print(next->distance);
-    Serial.print(F("\t"));   Serial.print(next->acceleration);
+    Serial.print(tab);   Serial.print(next->distance);
+    Serial.print(tab);   Serial.print(next->acceleration);
 
-    Serial.print(F("\t"));   Serial.print(next->entry_speed);
-    Serial.print(F("\t"));   Serial.print(next->nominal_speed);
-    Serial.print(F("\t"));   Serial.print(next->entry_speed_max);
+    Serial.print(tab);   Serial.print(next->entry_speed);
+    Serial.print(tab);   Serial.print(next->nominal_speed);
+    Serial.print(tab);   Serial.print(next->entry_speed_max);
 
-    Serial.print(F("\t"));   Serial.print(next->initial_rate);
-    Serial.print(F("\t"));   Serial.print(next->nominal_rate);
-    Serial.print(F("\t"));   Serial.print(next->final_rate);
+    Serial.print(tab);   Serial.print(next->initial_rate);
+    Serial.print(tab);   Serial.print(next->nominal_rate);
+    Serial.print(tab);   Serial.print(next->final_rate);
 
-    Serial.print(F("\t"));   Serial.print(next->accel_until);
-    Serial.print(F("\t"));   Serial.print(coast);
-    Serial.print(F("\t"));   Serial.print(decel);
-    //Serial.print(F("\t"));   Serial.print(next->steps_total);
-    //Serial.print(F("\t"));   Serial.print(next->steps_taken);
+    Serial.print(tab);   Serial.print(next->accel_until);
+    Serial.print(tab);   Serial.print(coast);
+    Serial.print(tab);   Serial.print(decel);
+    //Serial.print(tab);   Serial.print(next->steps_total);
+    //Serial.print(tab);   Serial.print(next->steps_taken);
 
-    Serial.print(F("\t"));   Serial.print(next->nominal_length_flag != 0 ? 'Y' : 'N');
-    Serial.print(F("\t"));   Serial.print(next->recalculate_flag != 0 ? 'Y' : 'N');
-    Serial.print(F("\t"));   Serial.print(next->busy != 0 ? 'Y' : 'N');
+    Serial.print(tab);   Serial.print(next->nominal_length_flag != 0 ? 'Y' : 'N');
+    Serial.print(tab);   Serial.print(next->recalculate_flag != 0 ? 'Y' : 'N');
+    Serial.print(tab);   Serial.print(next->busy != 0 ? 'Y' : 'N');
     Serial.println();
     s = get_next_segment(s);
   }
@@ -723,6 +724,7 @@ static FORCE_INLINE uint16_t MultiU24X32toH16(uint32_t longIn1, uint32_t longIn2
   uint16_t intRes = longIn1 * longIn2 >> 24;
 #elif defined LPC1796
   #warning To be implemented for LPC1796
+  uint16_t intRes = longIn1 * longIn2 >> 24; // copy from ESP8266 as placeholder. Need to declare intRes to avoid compile error at return
 #else
   register uint8_t tmp1;
   register uint8_t tmp2;
@@ -979,7 +981,7 @@ inline void isr_internal() {
         global_servoSteps_0 += global_servoStep_dir_0;
 #if defined ESP8266
         //analogWrite(SERVO0_PIN, global_servoSteps_0);
-#else if defined LPC1796
+#elif defined LPC1796
     #warning Need to implement for LPC1796
 #else
         servos[0].write(global_servoSteps_0);
@@ -1078,6 +1080,7 @@ inline void isr_internal() {
 void itr() {
 #elif defined LPC1796
   #warning Need to implement for LPC1796
+void itr(){
 #else
 ISR(TIMER1_COMPA_vect) {
   CRITICAL_SECTION_START
