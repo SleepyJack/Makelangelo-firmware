@@ -6,7 +6,7 @@
 
 #include "configure.h"
 #include "robot_polargraph.h"
-#include "eeprom.h"
+#include "ma_eeprom.h"
 
 #if MACHINE_STYLE == POLARGRAPH
 

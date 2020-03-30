@@ -12,7 +12,7 @@
 #include "motor.h"
 #include "SDcard.h"
 #include "LCD.h"
-#include "eeprom.h"
+#include "ma_eeprom.h"
 
 #include <SPI.h>  // pkm fix for Arduino 1.5
 

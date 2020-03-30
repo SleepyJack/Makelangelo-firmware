@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 #include "configure.h"
 #include "motor.h"
-#include "eeprom.h"
+#include "ma_eeprom.h"
 #include <EEPROM.h>
 #include <Arduino.h>  // for type definitions
 

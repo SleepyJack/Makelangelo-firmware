@@ -1,5 +1,5 @@
-#ifndef EEPROM_H
-#define EEPROM_H
+#ifndef MA_EEPROM_H
+#define MA_EEPROM_H
 //------------------------------------------------------------------------------
 // Makelangelo - firmware for various robot kinematic models
 // dan@marginallycelver.com 2013-12-26
