@@ -45,7 +45,11 @@
 #ifndef Servo_h
 #define Servo_h
 
-#ifndef ESP8266
+#ifdef LPC1796
+#warning This file is currently disabled for LPC1796 as with ESP8266. Need to consider if this is correct approach.
+#endif
+
+#if (not defined ESP8266) && (not defined LPC1796) // If this is an ATMega...
 
 #include <avr/interrupt.h>
 #include <Arduino.h>

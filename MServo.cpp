@@ -45,7 +45,11 @@
 
 #include "MServo.h"
 
-#ifndef ESP8266
+#ifdef LPC1796
+#warning This file is currently disabled for LPC1796 as with ESP8266. Need to consider if this is correct approach.
+#endif
+
+#if (not defined ESP8266) && (not defined LPC1796) // If this is an ATMega...
 
 #define usToTicks(_us)    (( clockCyclesPerMicrosecond()* _us) / 8)     // converts microseconds to tick (assumes prescale of 8)  // 12 Aug 2009
 #define ticksToUs(_ticks) (( (unsigned)_ticks * 8)/ clockCyclesPerMicrosecond() ) // converts from ticks back to microseconds

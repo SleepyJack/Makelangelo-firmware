@@ -69,9 +69,10 @@
 #define BOARD_TEENSYLU     4  // Teensylu
 #define BOARD_WEMOS        5  // Wemos D1 R2 + cnc shield (see board_wemos.h)
 #define BOARD_SIXI_MEGA    6  // Arduino Mega + custom shield for Sixi 2 robot
+#define BOARD_AX5_MINI     7  // Azteeg X5 Mini
 
 #ifndef MOTHERBOARD
-#define MOTHERBOARD BOARD_RUMBA  // change this
+#define MOTHERBOARD BOARD_AX5_MINI  // change this
 #endif
 
 #include "board_rumba.h"
@@ -80,6 +81,7 @@
 #include "board_teensylu.h"
 #include "board_wemos.h"
 #include "board_sixi_mega.h"
+#include "board_ax5_mini.h"
 
 //------------------------------------------------------------------------------
 // MOTOR DETAILS
@@ -204,14 +206,16 @@
 // TIMERS
 //------------------------------------------------------------------------------
 
-#ifdef ESP8266
+#if defined ESP8266
 
 #define CLOCK_FREQ            (80000000L)
 #define MAX_COUNTER           (4294967295L)  // 32 bits
 #define CRITICAL_SECTION_START  noInterrupts();
 #define CRITICAL_SECTION_END    interrupts();
 
-#else  // ESP8266
+#elif defined LPC1796
+	#warning Need to configure timers for LPC1796
+#else
 
 // for timer interrupt control
 #define CLOCK_FREQ            (16000000L)
@@ -221,7 +225,7 @@
 #define CRITICAL_SECTION_END    SREG = _sreg;
 #endif //CRITICAL_SECTION_START
 
-#endif  // ESP8266
+#endif  // Processor selection
 
 #define TIMER_RATE            ((CLOCK_FREQ)/8)
 

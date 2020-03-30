@@ -17,8 +17,11 @@
 // MACROS
 //------------------------------------------------------------------------------
 
-#ifdef ESP8266
+#if defined ESP8266
 #define CLOCK_ADJUST(x) {  timer0_write(ESP.getCycleCount() + (long) (80000L*(x)) );  }  // microseconds
+#elif defined LPC1796
+#warning Need to define CLOCK_ADJUST for LPC1796
+#define CLOCK_ADJUST(x) {}
 #else
 #define CLOCK_ADJUST(x) {  OCR1A = (x);  }  // microseconds
 #endif
@@ -35,7 +38,11 @@
 //------------------------------------------------------------------------------
 
 Motor motors[NUM_MOTORS + NUM_SERVOS];
-#ifndef ESP8266
+#if defined ESP8266
+// No servos for ESP8266
+#elif defined LPC1796
+#warning Need to define servos for LPC1796
+#else
 Servo servos[NUM_SERVOS];
 #endif
 
@@ -121,7 +128,11 @@ uint8_t positionErrorFlags;
 //------------------------------------------------------------------------------
 // METHODS
 //------------------------------------------------------------------------------
-#ifdef ESP8266
+#if defined ESP8266
+// itr() not needed for ESP8266
+#elif defined LPC1796
+#warning Need to define itr() for LPC1796
+#else
 void itr();
 #endif
 
@@ -278,11 +289,13 @@ void motor_setup() {
 
   // setup servos
 #if NUM_SERVOS>0
-#ifdef ESP8266
+#if defined ESP8266
   pinMode(SERVO0_PIN, OUTPUT);
+#elif defined LPC1796
+  #warning Need to setup servos for LPC1796
 #else
   servos[0].attach(SERVO0_PIN);
-#endif  // ESP8266
+#endif  // Processor selection
 #endif
 
 #if NUM_SERVOS>1
@@ -313,10 +326,12 @@ void motor_setup() {
 
   // disable global interrupts
   noInterrupts();
-#ifdef ESP8266
+#if defined ESP8266
   timer0_isr_init();
   timer0_attachInterrupt(itr);
   CLOCK_ADJUST(2000);
+#elif defined LPC1796
+  #warning Need to disable global interrupts for LPC1796
 #else
   // set entire TCCR1A register to 0
   TCCR1A = 0;
@@ -330,7 +345,7 @@ void motor_setup() {
   TCCR1B = (TCCR1B & ~(0x07 << CS10)) | (2 << CS10);
   // enable timer compare interrupt
   TIMSK1 |= (1 << OCIE1A);
-#endif  // ESP8266
+#endif  // Processor selection
 
   interrupts();  // enable global interrupts
 }
@@ -704,9 +719,11 @@ FORCE_INLINE unsigned short calc_timer(uint32_t desired_freq_hz, uint8_t*loops) 
 // D C B A is longIn2
 //
 static FORCE_INLINE uint16_t MultiU24X32toH16(uint32_t longIn1, uint32_t longIn2) {
-#ifdef ESP8266
+#if defined ESP8266
   uint16_t intRes = longIn1 * longIn2 >> 24;
-#else // ESP8266
+#elif defined LPC1796
+  #warning To be implemented for LPC1796
+#else
   register uint8_t tmp1;
   register uint8_t tmp2;
   register uint16_t intRes;
@@ -753,7 +770,7 @@ static FORCE_INLINE uint16_t MultiU24X32toH16(uint32_t longIn1, uint32_t longIn2
     [longIn2] "d" (longIn2)
     : "cc"
   );
-#endif // ESP8266
+#endif // Processor selection
   return intRes;
 }
 
@@ -799,11 +816,13 @@ inline void isr_internal() {
 #endif
 
 #if NUM_SERVOS>0
-#ifdef ESP8266
+#if defined ESP8266
       //analogWrite(SERVO0_PIN, working_seg->a[NUM_MOTORS].step_count);
+#elif defined LPC1796
+  #warning Need to implement for LPC1796
 #else
       //servos[0].write(working_seg->a[NUM_MOTORS].step_count);
-#endif  // ESP8266
+#endif  // Processor selection
 #endif  // NUM_SERVOS>0
 
       start_feed_rate = working_seg->initial_rate;
@@ -958,11 +977,13 @@ inline void isr_internal() {
       if(servoOver0>0) {
         servoOver0 -= steps_total;
         global_servoSteps_0 += global_servoStep_dir_0;
-#ifdef ESP8266
+#if defined ESP8266
         //analogWrite(SERVO0_PIN, global_servoSteps_0);
+#else if defined LPC1796
+    #warning Need to implement for LPC1796
 #else
         servos[0].write(global_servoSteps_0);
-#endif
+#endif // Processor selection
       }
 #endif
 
@@ -1041,23 +1062,33 @@ inline void isr_internal() {
         Serial.print("\t");     Serial.print(current_feed_rate);
         Serial.println();//*/
     }
-#ifndef ESP8266
+#if defined ESP8266
+	// Do nothing
+#elif defined LPC1796
+#warning Need to consider for LPC1796
+#else
     // TODO this line needs explaining.  Is it even needed?
     OCR1A = (OCR1A < (TCNT1 + 16)) ? (TCNT1 + 16) : OCR1A;
-#endif // ESP8266
+#endif // Processor selection
   }
 }
 
 
-#ifdef ESP8266
+#if defined ESP8266
 void itr() {
+#elif defined LPC1796
+  #warning Need to implement for LPC1796
 #else
 ISR(TIMER1_COMPA_vect) {
   CRITICAL_SECTION_START
 #endif
   isr_internal();
 
-#ifndef ESP8266
+#if defined ESP8266
+// Do nothing here
+#elif defined LPC1796
+#warning Need to consider for LPC1796
+#else
   CRITICAL_SECTION_END
 #endif
 }
